@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Viajes</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="https://servicios.inamhi.gob.ec/wp-content/uploads/2023/06/OMM_logo-270x300.png"
+        type="image/x-icon">
+    <style>
+        body {
+            background-color: #FFE4C4;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #FFE4C4;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h2,
+        h3 {
+            color: #000;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-custom {
+            background-color: #28a745;
+            color: white;
+            margin-right: 10px;
+        }
+
+        .btn-custom:hover {
+            background-color: #218838;
+            color: black;
+        }
+
+        .btn-logout {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-logout:hover {
+            background-color: #c82333;
+        }
+
+        .form-control {
+            border: 1px solid #000;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .table {
+            margin-top: 20px;
+        }
+
+        .table thead {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f2f2f2;
+        }
+
+        .table td,
+        .table th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .btn-primary {
+            background-color: #008080;
+            border-color: #008080;
+            width: 30%;
+            padding: 8px;
+            font-size: 1em;
+            margin-right: 15px;
+        }
+
+        .btn-custom-small {
+            background-color: #28a745;
+            border-color: #28a745;
+            width: 30%;
+            padding: 8px;
+            font-size: 1em;
+        }
+        .alert{
+            text-align: center;
+            background-color: red;
+            color: black;
+            font-weight: bold;
+        }
+
+        .submit-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .button-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-custom,
+            .btn-logout {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .btn-primary,
+            .btn-custom-small {
+                padding: 8px;
+                font-size: 1em;
+            }
+
+            table th,
+            table td {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Registrar Viaje</h2>
+        {% if messages %}
+        <div class="alert alert-info">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="button-container">
+            <div>
+                <a href="{% url 'agregar_chofer' %}" class="btn btn-custom">Agregar Chofer</a>
+                <a href="{% url 'agregar_vehiculo' %}" class="btn btn-custom">Agregar Vehículo</a>
+                <a href="{% url 'buscar_chofer' %}" class="btn btn-custom">Buscar Chofer</a>
+            </div>
+            <a href="{% url 'loginChoferes' %}" class="btn btn-logout">Cerrar Sesión</a>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="chofer">Chofer</label>
+                <select class="form-control" id="chofer" name="chofer" required>
+                    <option value="">Seleccione un chofer</option>
+                    {% for chofer in choferes %}
+                    <option value="{{ chofer.id }}">{{ chofer.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="vehiculo">Vehículo (Número de Placa)</label>
+                <select class="form-control" id="vehiculo" name="vehiculo" required>
+                    <option value="">Seleccione un vehículo</option>
+                    {% for vehiculo in vehiculos %}
+                    <option value="{{ vehiculo.id }}">{{ vehiculo.placa }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="provincia">Provincia</label>
+                <select class="form-control" id="provincia" name="provincia" required>
+                    <option value="">Seleccione una provincia</option>
+                    {% for provincia in provincias %}
+                    <option value="{{ provincia.id }}">{{ provincia.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="direccion">Dirección</label>
+                <input type="text" class="form-control" id="direccion" name="direccion" required>
+            </div>
+            <div class="form-group">
+                <label for="fecha_salida">Fecha de Salida</label>
+                <input type="date" class="form-control" id="fecha_salida" name="fecha_salida" required>
+            </div>
+            <div class="form-group">
+                <label for="hora_salida">Hora de Salida</label>
+                <input type="time" class="form-control" id="hora_salida" name="hora_salida" required>
+            </div>
+            <div class="form-group">
+                <label for="fecha_llegada">Fecha de Llegada</label>
+                <input type="date" class="form-control" id="fecha_llegada" name="fecha_llegada" required>
+            </div>
+            <div class="form-group">
+                <label for="hora_llegada">Hora de Llegada</label>
+                <input type="time" class="form-control" id="hora_llegada" name="hora_llegada" required>
+            </div>
+
+            <div class="submit-container">
+                <button type="submit" class="btn btn-primary">Registrar Viaje</button>
+            </div>
+        </form>
+
+        <h3>Registro de Viajes</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Chofer</th>
+                    <th>Vehículo</th>
+                    <th>Provincia</th>
+                    <th>Fecha de Salida</th>
+                    <th>Hora de Salida</th>
+                    <th>Fecha de Llegada</th>
+                    <th>Hora de Llegada</th>
+                    <th>Duración del Viaje</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for viaje in registros %}
+                <tr>
+                    <td>{{ viaje.chofer.nombre }}</td>
+                    <td>{{ viaje.vehiculo.placa }}</td>
+                    <td>{{ viaje.provincia.nombre }}</td>
+                    <td>{{ viaje.fecha_salida }}</td>
+                    <td>{{ viaje.hora_salida }}</td>
+                    <td>{{ viaje.fecha_llegada }}</td>
+                    <td>{{ viaje.hora_llegada }}</td>
+                    <td>{{ viaje.duracion_viaje }} días</td>
+                    <td>
+                        <form action="{% url 'eliminar_viaje' viaje.id %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</body>
+
+</html>

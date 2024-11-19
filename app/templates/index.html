@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="icon" href="https://servicios.inamhi.gob.ec/wp-content/uploads/2023/06/OMM_logo-270x300.png" type="image/x-icon">
+    <style>
+        body {
+            background-color: #FFE4C4;
+        }
+
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background-color: #d32f2f;
+        }
+
+        .table th,
+        .table td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+
+
+        .table tbody tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .table {
+            border-collapse: collapse;
+            border: 2px solid #000;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .modal-header {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .modal-body {
+            background-color: #f9f9f9;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border: none;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Agenda Telefonica</h2>
+        <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#newProgrammerModal">Agregar
+            Programador</button> <a href="{% url 'logout' %}" class="logout-button">Cerrar sesión</a>
+
+        <table id="datatable-programmers" class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th class="centered">#</th>
+                    <th class="centered">Apellidos y Nombres</th>
+                    <th class="centered">Puesto Institucional</th>
+                    <th class="centered">Unidad Perteneciente</th>
+                    <th class="centered">Dirección Institucional</th>
+                    <th class="centered">Ciudad Laboral</th>
+                    <th class="centered">Teléfono Institucional</th>
+                    <th class="centered">Extensión Telefónica</th>
+                    <th class="centered">Correo Institucional</th>
+                    <th class="centered">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody_programmers"></tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="newProgrammerModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Agregar Programador</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newProgrammerForm" action="{% url 'create_programmer' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" id="programmerId">
+                        <div class="mb-3">
+                            <label for="newName" class="form-label">Apellidos y Nombres</label>
+                            <input type="text" class="form-control" id="newName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPosition" class="form-label">Puesto Institucional</label>
+                            <input type="text" class="form-control" id="newPosition" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUnit" class="form-label">Unidad Perteneciente</label>
+                            <input type="text" class="form-control" id="newUnit" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newAddress" class="form-label">Dirección Institucional</label>
+                            <input type="text" class="form-control" id="newAddress" required>
+                            </ div>
+                            <div class="mb-3">
+                                <label for="newCity" class="form-label">Ciudad Laboral</label>
+                                <input type="text" class="form-control" id="newCity" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="newPhone" class="form-label">Teléfono Institucional</label>
+                                <input type="text" class="form-control" id="newPhone" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="newExtension" class="form-label">Extensión Telefónica</label>
+                                <input type="text" class="form-control" id="newExtension" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="newEmail" class="form-label">Correo Institucional</label>
+                                <input type="email" class="form-control" id="newEmail" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        let dataTable;
+
+        const initDataTable = async () => {
+            await listProgrammers();
+            dataTable = $('#datatable-programmers').DataTable();
+        };
+
+        const listProgrammers = async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:8000/app/list_programmers/");
+                const data = await response.json();
+                let content = ``;
+                data.programmers.forEach((programmer, index) => {
+                    content += `
+                        <tr data-id="${programmer.id}">
+                            <td>${index + 1}</td>
+                            <td>${programmer.apellidos_y_nombres}</td>
+                            <td>${programmer.puesto_institucional}</td>
+                            <td>${programmer.unidad_perteneciente}</td>
+                            <td>${programmer.direccion_institucional}</td>
+                            <td>${programmer.ciudad_laboral}</td>
+                            <td>${programmer.telefono_institucional}</td>
+                            <td>${programmer.extension_telefonica}</td>
+                            <td>${programmer.correo_institucional}</td>
+                            <td>
+                                <button class="btn btn-warning" onclick="editProgrammer(${programmer.id})">Editar</button>
+                                <button class="btn btn-danger" onclick="deleteProgrammer(${programmer.id})">Eliminar</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                $('#tableBody_programmers').html(content);
+                if ($.fn.dataTable.isDataTable('#datatable-programmers')) {
+                    $('#datatable-programmers').DataTable().destroy();
+                }
+                $('#datatable-programmers').DataTable();
+            } catch (error) {
+                console.error("Error al listar programadores:", error);
+            }
+        };
+
+        document.getElementById('newProgrammerForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const id = document.getElementById('programmerId').value;
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `http://127.0.0.1:8000/app/update_programmer/${id}/` : "http://127.0.0.1:8000/app/create_programmer/";
+
+            const newProgrammerData = {
+                apellidos_y_nombres: document.getElementById('newName').value,
+                puesto_institucional: document.getElementById('newPosition').value,
+                unidad_perteneciente: document.getElementById('newUnit').value,
+                direccion_institucional: document.getElementById('newAddress').value,
+                ciudad_laboral: document.getElementById('newCity').value,
+                telefono_institucional: document.getElementById('newPhone').value,
+                extension_telefonica: document.getElementById('newExtension').value,
+                correo_institucional: document.getElementById('newEmail').value
+            };
+
+            const csrftoken = getCookie('csrftoken'); 
+
+            if (method === 'PUT') {
+                try {
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken, 
+                        },
+                        body: JSON.stringify(newProgrammerData)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Error al actualizar el programador');
+                    }
+
+                    alert('Programador actualizado correctamente!');
+                    location.reload(); 
+
+                } catch (error) {
+                    console.error("Error al actualizar el programador:", error);
+                    alert(error.message);
+                }
+            } else {
+                try {
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken,
+                        },
+                        body: JSON.stringify(newProgrammerData)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Error en la creación del programador');
+                    }
+
+                    alert('Programador creado correctamente!');
+                    location.reload(); 
+
+                } catch (error) {
+                    console.error("Error al guardar el programador:", error);
+                    alert(error.message);
+                }
+            }
+        });
+
+        const editProgrammer = (id) => {
+            const row = $(`#datatable-programmers tr[data-id='${id}']`);
+            const programmerData = {
+                id: id,
+                apellidos_y_nombres: row.find('td').eq(1).text(),
+                puesto_institucional: row.find('td').eq(2).text(),
+                unidad_perteneciente: row.find('td').eq(3).text(),
+                direccion_institucional: row.find('td').eq(4).text(),
+                ciudad_laboral: row.find('td').eq(5).text(),
+                telefono_institucional: row.find('td').eq(6).text(),
+                extension_telefonica: row.find('td').eq(7).text(),
+                correo_institucional: row.find('td').eq(8).text()
+            };
+
+            document.getElementById('programmerId').value = programmerData.id;
+            document.getElementById('newName').value = programmerData.apellidos_y_nombres;
+            document.getElementById('newPosition').value = programmerData.puesto_institucional;
+            document.getElementById('newUnit').value = programmerData.unidad_perteneciente;
+            document.getElementById('newAddress').value = programmerData.direccion_institucional;
+            document.getElementById('newCity').value = programmerData.ciudad_laboral;
+            document.getElementById('newPhone').value = programmerData.telefono_institucional;
+            document.getElementById('newExtension').value = programmerData.extension_telefonica;
+            document.getElementById('newEmail').value = programmerData.correo_institucional;
+
+            document.getElementById('modalTitle').innerText = "Editar Programador";
+
+            const newProgrammerModal = new bootstrap.Modal(document.getElementById('newProgrammerModal'));
+            newProgrammerModal.show();
+        };
+
+        const deleteProgrammer = async (id) => {
+            if (confirm("¿Estás seguro de que deseas eliminar este programador?")) {
+                const csrftoken = getCookie('csrftoken'); 
+                try {
+                    const response = await fetch(`http://127.0.0.1:8000/app/delete_programmer/${id}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken,  
+                        },
+                    }); location.reload();
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Error al eliminar el programador');
+                    }
+
+                    await listProgrammers();
+                } catch (error) {
+                    console.error("Error al eliminar el programador:", error);
+                    alert(error.message);
+                }
+            }
+        };
+
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                   
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initDataTable();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservar Salas</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="https://servicios.inamhi.gob.ec/wp-content/uploads/2023/06/OMM_logo-270x300.png"
+        type="image/x-icon">
+    <style>
+        body {
+            background-color: #FFE4C4;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #FFE4C4;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h2,
+        h3 {
+            color: #343a40;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .reservada {
+            color: red;
+            font-weight: bold;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .table th,
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .form-control {
+            border: 1px solid #000;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 5px rgba(0, 86, 179, 0.5);
+        }
+
+        .btn-primary {
+            background-color: #008080;
+            border-color: #008080;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .alert {
+            margin-top: 20px;
+            background-color: red;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        form {
+            margin-bottom: 40px;
+        }
+
+        .thead-dark th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .reservation-summary {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Reservar Sala</h2>
+        <div class="text-right mb-3">
+            <a href="{% url 'home' %}" class="btn btn-danger">Regresar a Home</a>
+        </div>
+
+        {% if messages %}
+        <div>
+            {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" onsubmit="return validarHoras()">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingresa tu nombre"
+                    required>
+            </div>
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" required>
+            </div>
+            <div class="form-group">
+                <label for="sala">Sala</label>
+                <select class="form-control" id="sala" name="sala" required>
+                    <option value="">Seleccione una sala</option>
+                    {% for sala in salas %}
+                    <option value="{{ sala.id }}">{{ sala.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="hora_inicio">Hora de Inicio</label>
+                <input type="time" class="form-control" id="hora_inicio" name="hora_inicio" required min="07:00"
+                    max="18:00">
+            </div>
+            <div class="form-group">
+                <label for="hora_fin">Hora de Fin</label>
+                <input type="time" class="form-control" id="hora_fin" name="hora_fin" required min="07:00" max="18:00">
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Reservar</button>
+                <a href="{% url 'reservas' %}" class="btn btn-secondary ml-2">Ver Reservas</a>
+            </div>
+        </form>
+
+        <h3>Reservas Actuales</h3>
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Fecha</th>
+                    <th>Sala</th>
+                    <th>Hora de Inicio</th>
+                    <th>Hora de Fin</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservas %}
+                <tr class="{% if reserva.fecha == fecha_actual and reserva.sala_id == sala.id %}reservada{% endif %}">
+                    <td>{{ reserva.nombre_reservante }}</td>
+                    <td>{{ reserva.fecha }}</td>
+                    <td>{{ reserva.sala.nombre }}</td>
+                    <td>{{ reserva.hora_inicio }}</td>
+                    <td>{{ reserva.hora_fin }}</td>
+                    <td>
+                        <form action="{% url 'eliminar_reserva' reserva.id %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function validarHoras() {
+            const horaInicio = document.getElementById('hora_inicio').value;
+            const horaFin = document.getElementById('hora_fin').value;
+
+            if (horaInicio >= horaFin) {
+                alert('La hora de inicio debe ser anterior a la hora de fin.');
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+
+</html>

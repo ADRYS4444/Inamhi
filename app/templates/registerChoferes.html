@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #FFE4C4; 
+            height: 100vh; 
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            flex-direction: column; 
+        }
+        .container {
+            background-color: #ffffff; 
+            padding: 2rem;
+            border-radius: 0.5rem; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px; 
+            border: 2px solid #000; 
+        }
+        h2 {
+            margin-bottom: 1.5rem; 
+            text-align: center; 
+        }
+        .btn-primary {
+            width: 100%; 
+        }
+        p {
+            text-align: center; 
+            margin-top: 1rem; 
+        }
+        input.form-control {
+            border: 1px solid #000; 
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Registro</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username" class="form-label">Usuario</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="password_confirm">Confirmar Contraseña</label>
+                <input type="password" class="form-control" id="password_confirm" name="password_confirm" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Registrarse</button>
+        </form>
+        <p>¿Ya tienes cuenta? <a href="{% url 'loginChoferes' %}">Inicia sesión aquí</a></p>
+    </div>
+</body>
+</html>

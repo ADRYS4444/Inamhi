@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Choferes</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="https://servicios.inamhi.gob.ec/wp-content/uploads/2023/06/OMM_logo-270x300.png" type="image/x-icon">
+</head>
+<body>
+    <div class="container">
+        <h2>Lista de Choferes</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cedula</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for chofer in choferes %}
+                    <tr>
+                        <td>{{ chofer.nombre }}</td>
+                        <td>{{ chofer.cedula }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
