@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Chofer</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            margin-top: 20px;
+            text-align: center;
+            max-width: 700px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #008080;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            max-width: 300px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1fa13e;
+        }
+
+        table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #343a40; 
+        }
+
+        table th {
+            background-color: #008080; 
+            color: white; 
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+            color: #ffffff; 
+        }
+
+        table tr:nth-child(even) {
+            background-color: #495057; 
+        }
+
+        .no-results {
+            color: #ff0000;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Buscar Chofer por Nombre</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="nombre">Nombre del chofer:</label>
+                <input type="text" name="nombre" id="nombre" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-success">Buscar</button>
+            <a href="{% url 'loginChoferes' %}" class="btn btn-danger">Regresar</a>
+        </form>
+
+        {% if choferes %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cédula</th>
+                    <th>Provincia</th>
+                    <th>Duración (días)</th>
+                    <th>Fecha de Salida</th>
+                    <th>Hora de Salida</th>
+                    <th>Fecha de Llegada</th>
+                    <th>Hora de Llegada</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for chofer in choferes %}
+                {% for viaje in chofer.viajes %}
+                <tr>
+                    {% if forloop.first %}
+                    <td rowspan="{{ chofer.viajes|length }}">{{ chofer.nombre }}</td>
+                    <td rowspan="{{ chofer.viajes|length }}">{{ chofer.cedula }}</td>
+                    {% endif %}
+                    <td>{{ viaje.origen }}</td>
+                    <td>{{ viaje.duracion }}</td>
+                    <td>{{ viaje.fecha_salida }}</td>
+                    <td>{{ viaje.hora_salida }}</td>
+                    <td>{{ viaje.fecha_llegada|default:"No disponible" }}</td>
+                    <td>{{ viaje.hora_llegada|default:"No disponible" }}</td>
+                </tr>
+                {% endfor %}
+                {% empty %}
+                <tr>
+                    <td colspan="8">No se encontraron viajes para este chofer.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="no-results">No se encontraron choferes con ese nombre.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

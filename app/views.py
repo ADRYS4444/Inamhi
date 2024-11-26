@@ -476,6 +476,36 @@ def buscar_chofer_view(request):
         'choferes': choferes_data
     })
 
+def buscar_chofer_nombre_view(request):
+    choferes_data = []
+
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        choferes = Chofer.objects.filter(nombre__icontains=nombre) 
+
+        for chofer in choferes:
+            viajes_data = []
+
+            for viaje in chofer.viaje_set.all():
+                viajes_data.append({
+                    'origen': viaje.provincia.nombre,
+                    'duracion': viaje.duracion_viaje() if viaje.fecha_llegada else 'No disponible',
+                    'fecha_salida': viaje.fecha_salida,
+                    'hora_salida': viaje.hora_salida,
+                    'fecha_llegada': viaje.fecha_llegada,
+                    'hora_llegada': viaje.hora_llegada
+                })
+
+            choferes_data.append({
+                'nombre': chofer.nombre,
+                'cedula': chofer.cedula,
+                'viajes': viajes_data,
+            })
+
+    return render(request, 'buscar_chofer_nombre.html', {
+        'choferes': choferes_data
+    })
+
 
 def agregar_vehiculo_view(request):
     if request.method == 'POST':
