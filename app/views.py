@@ -176,12 +176,14 @@ def loginChoferes_view(request):
 
         if user is not None:
             login(request, user)
-            return redirect('registroViajes')
+            if user.is_superuser:
+                return redirect('registroViajes')  
+            else:
+                return redirect('buscar_chofer_nombre')  
         else:
-            messages.error(request, "Credenciales inválidas")
+            return render(request, 'loginChoferes.html', {'error': 'Credenciales inválidas'})
 
     return render(request, 'loginChoferes.html')
-
 
 from .models import Viaje, Chofer, Vehiculo, Provincia
 from django.http import HttpResponse
