@@ -185,6 +185,7 @@ def loginChoferes_view(request):
 
     return render(request, 'loginChoferes.html')
 
+
 from .models import Viaje, Chofer, Vehiculo, Provincia
 from django.http import HttpResponse
 
@@ -509,6 +510,7 @@ def buscar_chofer_nombre_view(request):
     })
 
 
+
 def agregar_vehiculo_view(request):
     if request.method == 'POST':
         form = VehiculoForm(request.POST)
@@ -625,7 +627,7 @@ def loginSalas_view(request):
             if user.is_superuser:
                 return redirect('reservar_salas') 
             else:
-                return redirect('vista_reservas') 
+                return redirect('vista_reservas')  
         else:
             return render(request, 'loginSalas.html', {'error': 'Credenciales inválidas'})
     
@@ -668,9 +670,7 @@ def reservas_view(request):
 
     return render(request, 'reservas.html', context)
 
-
-
-def reservasSalas_view(request):
+def vista_reservas_view(request):
     reservas = Reserva.objects.all()
     salas = Sala.objects.all()
 
@@ -685,10 +685,10 @@ def reservasSalas_view(request):
         ocupadas[reserva.fecha][reserva.sala_id].append((reserva.hora_inicio, reserva.hora_fin))
 
         evento = {
-            'title': reserva.sala.nombre, 
+            'title': reserva.sala.nombre,  
             'start': f'{reserva.fecha}T{reserva.hora_inicio}',  
-            'end': f'{reserva.fecha}T{reserva.hora_fin}',  
-            'backgroundColor': 'red', 
+            'end': f'{reserva.fecha}T{reserva.hora_fin}', 
+            'backgroundColor': 'red',  
             'borderColor': 'red'
         }
         eventos.append(evento)
@@ -698,8 +698,42 @@ def reservasSalas_view(request):
     context = {
         'ocupadas': ocupadas_transformadas,
         'salas': salas,
-        'eventos_json': json.dumps(eventos) 
+        'eventos_json': json.dumps(eventos)  
     }
 
     return render(request, 'vista_reservas.html', context)
+
+from django.core.mail import send_mail
+from django.conf import settings
+
+def enviar_formulario(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        correo = request.POST.get('email')
+        mensaje = request.POST.get('mensaje')
+        fecha_reserva = request.POST.get('fecha_reserva')
+        hora_inicio = request.POST.get('hora_inicio')
+        hora_fin = request.POST.get('hora_fin')
+        sala = request.POST.get('sala')  
+
+        asunto = f'Nuevo mensaje de {nombre} - Reserva de Sala'
+        cuerpo = f'Nombre: {nombre}\nCorreo: {correo}\nMensaje: {mensaje}\nFecha de Reserva: {fecha_reserva}\nHora de Inicio: {hora_inicio}\nHora de Fin: {hora_fin}\nSala Seleccionada: {sala}'
+
+        try:
+            send_mail(
+                asunto,
+                cuerpo,
+                settings.DEFAULT_FROM_EMAIL,
+                ['aybanez2003@gmail.com'],  
+                fail_silently=False,
+            )
+            messages.success(request, 'El formulario se envió correctamente.')
+        except Exception as e:
+            messages.error(request, f'Ocurrió un error al enviar el formulario: {e}')
+
+        return redirect('vista_reservas')
+
+    return render(request, 'vista_reservas.html')
+
+
 

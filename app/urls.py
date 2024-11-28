@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import login_view, logout_view, loginChoferes_view, registroViajes, agregar_provincias
+from .views import buscar_chofer_nombre_view, login_view, logout_view, loginChoferes_view, registroViajes, agregar_provincias
 from .views import eliminar_viaje, eliminar_chofer, eliminar_vehiculo
 from .views import reservar_salas, eliminar_reserva
 from django.views.generic import TemplateView
@@ -24,7 +24,7 @@ urlpatterns = [
     path('choferes/', views.lista_choferes_view, name='lista_choferes'),
     path('agregar_chofer/', views.agregar_chofer_view, name='agregar_chofer'),
     path('buscar_chofer/', views.buscar_chofer_view, name='buscar_chofer'),
-    path('buscar_chofer_nombre/', views.buscar_chofer_nombre_view, name='buscar_chofer_nombre'),
+    path('buscar_chofer_nombre/', buscar_chofer_nombre_view, name='buscar_chofer_nombre'),
     path('agregar_vehiculo/', views.agregar_vehiculo_view, name='agregar_vehiculo'),
     path('eliminar_chofer/<int:chofer_id>/', eliminar_chofer, name='eliminar_chofer'),  
     path('eliminar_vehiculo/<int:vehiculo_id>/', eliminar_vehiculo, name='eliminar_vehiculo'),
@@ -34,5 +34,6 @@ urlpatterns = [
     path('eliminar_reserva/<int:reserva_id>/', eliminar_reserva, name='eliminar_reserva'),
     path('reservas/', views.reservas_view, name='reservas'),
     path('loginSalas/', views.loginSalas_view, name='loginSalas'),
-    path('vista_reservas/', views.reservasSalas_view, name='vista_reservas'),
+    path('vista-reservas/', views.vista_reservas_view, name='vista_reservas'),
+    path('enviar-formulario/', views.enviar_formulario, name='enviar_formulario'),
 ]
