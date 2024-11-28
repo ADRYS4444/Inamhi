@@ -103,7 +103,7 @@
                 <input type="text" name="nombre" id="nombre" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-success">Buscar</button>
-            <a href="{% url 'loginChoferes' %}" class="btn btn-danger">Regresar</a>
+            <a href="{% url 'registroViajes' %}" class="btn btn-danger">Regresar</a>
         </form>
 
         {% if choferes %}
@@ -118,6 +118,7 @@
                     <th>Hora de Salida</th>
                     <th>Fecha de Llegada</th>
                     <th>Hora de Llegada</th>
+                    <th>Viáticos</th>
                 </tr>
             </thead>
             <tbody>
@@ -134,11 +135,12 @@
                     <td>{{ viaje.hora_salida }}</td>
                     <td>{{ viaje.fecha_llegada|default:"No disponible" }}</td>
                     <td>{{ viaje.hora_llegada|default:"No disponible" }}</td>
+                    <td>{{ viaje.viaticos }}</td>
                 </tr>
                 {% endfor %}
                 {% empty %}
                 <tr>
-                    <td colspan="8">No se encontraron viajes para este chofer.</td>
+                    <td colspan="9">No se encontraron viajes para este chofer.</td>
                 </tr>
                 {% endfor %}
             </tbody>

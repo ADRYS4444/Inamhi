@@ -64,6 +64,7 @@ class Viaje(models.Model):
     hora_llegada = models.TimeField(null=True, blank=True)
     direccion = models.CharField(max_length=255)
     provincia = models.ForeignKey(Provincia, on_delete=models.CASCADE)
+    viaticos = models.CharField(max_length=20, choices=[('con_viaticos', 'Con Viáticos'), ('sin_viaticos', 'Sin Viáticos')], default='sin_viaticos')
 
     def duracion_viaje(self):
         if self.fecha_llegada:
@@ -73,6 +74,7 @@ class Viaje(models.Model):
 
     def __str__(self):
         return f"Viaje de {self.chofer} a {self.provincia}"
+
 
 
 

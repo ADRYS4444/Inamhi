@@ -174,7 +174,7 @@ def loginChoferes_view(request):
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
 
-        if user is not None:
+        if user:
             login(request, user)
             if user.is_superuser:
                 return redirect('registroViajes')  
@@ -213,7 +213,7 @@ def registroViajes(request):
         if viaje.fecha_llegada: 
             viaje.duracion_viaje = (viaje.fecha_llegada - viaje.fecha_salida).days
         else:
-            viaje.duracion_viaje = 'No disponible' 
+            viaje.duracion_viaje = 'No disponible'
 
     chofer_id = request.GET.get('chofer_id')
     meses_viajes = []
@@ -251,6 +251,7 @@ def registroViajes(request):
         hora_llegada = request.POST['hora_llegada']
         direccion = request.POST['direccion']
         provincia_id = request.POST['provincia']
+        viaticos = request.POST.get('viaticos', 'sin_viaticos')  # Asegúrate de obtener el valor
 
         fecha_hora_salida = timezone.datetime.strptime(f"{fecha_salida} {hora_salida}", '%Y-%m-%d %H:%M')
         fecha_hora_llegada = timezone.datetime.strptime(f"{fecha_llegada} {hora_llegada}", '%Y-%m-%d %H:%M')
@@ -266,11 +267,11 @@ def registroViajes(request):
             fecha_salida__lt=fecha_hora_llegada,
             fecha_llegada__gt=fecha_hora_salida
         )
- 
+
         if viajes_superpuestos.exists():
             messages.error(request, 'El chofer ya tiene un viaje registrado en este rango de tiempo.')
             return redirect('registroViajes')
-        
+
         if viaje_superpuesto.exists():
             messages.error(request, 'El vehiculo ya tiene un viaje registrado en este rango de tiempo.')
             return redirect('registroViajes')
@@ -283,7 +284,8 @@ def registroViajes(request):
             fecha_llegada=fecha_hora_llegada,
             hora_llegada=hora_llegada,
             direccion=direccion,
-            provincia_id=provincia_id
+            provincia_id=provincia_id,
+            viaticos=viaticos  # Guardar los viáticos correctamente
         )
         viaje.save()
         messages.success(request, 'Viaje registrado exitosamente.')
@@ -297,6 +299,7 @@ def registroViajes(request):
         'meses_viajes': meses_viajes,
         'chofer_id': chofer_id,
     })
+
 
 from django.db.models import fields
 
@@ -444,7 +447,7 @@ def agregar_chofer_view(request):
         form = ChoferForm()
 
     choferes = Chofer.objects.all()  
-    return render(request, 'agregar_Chofer.html', {'form': form, 'choferes': choferes})
+    return render(request, 'agregar_chofer.html', {'form': form, 'choferes': choferes})
 
 
 from django.utils import timezone
@@ -466,7 +469,8 @@ def buscar_chofer_view(request):
                     'fecha_salida': viaje.fecha_salida,
                     'hora_salida': viaje.hora_salida,
                     'fecha_llegada': viaje.fecha_llegada,
-                    'hora_llegada': viaje.hora_llegada
+                    'hora_llegada': viaje.hora_llegada,
+                    'viaticos': viaje.viaticos,  # Agregamos los viáticos aquí
                 })
 
             choferes_data.append({
@@ -478,6 +482,7 @@ def buscar_chofer_view(request):
     return render(request, 'buscar_chofer.html', {
         'choferes': choferes_data
     })
+
 
 def buscar_chofer_nombre_view(request):
     choferes_data = []
@@ -496,7 +501,8 @@ def buscar_chofer_nombre_view(request):
                     'fecha_salida': viaje.fecha_salida,
                     'hora_salida': viaje.hora_salida,
                     'fecha_llegada': viaje.fecha_llegada,
-                    'hora_llegada': viaje.hora_llegada
+                    'hora_llegada': viaje.hora_llegada,
+                    'viaticos': viaje.viaticos,  # Agregamos los viáticos aquí
                 })
 
             choferes_data.append({
@@ -508,6 +514,7 @@ def buscar_chofer_nombre_view(request):
     return render(request, 'buscar_chofer_nombre.html', {
         'choferes': choferes_data
     })
+
 
 
 

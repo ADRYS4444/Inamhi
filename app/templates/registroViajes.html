@@ -106,7 +106,8 @@
             padding: 8px;
             font-size: 1em;
         }
-        .alert{
+
+        .alert {
             text-align: center;
             background-color: red;
             color: black;
@@ -174,12 +175,13 @@
             <div class="form-group">
                 <label for="chofer">Chofer</label>
                 <select class="form-control" id="chofer" name="chofer" required>
-                    <option value="">Seleccione un chofer</option>
+                    <option value="">Seleccione un chofer...</option>
                     {% for chofer in choferes %}
                     <option value="{{ chofer.id }}">{{ chofer.nombre }}</option>
                     {% endfor %}
                 </select>
             </div>
+
             <div class="form-group">
                 <label for="vehiculo">Vehículo (Número de Placa)</label>
                 <select class="form-control" id="vehiculo" name="vehiculo" required>
@@ -189,40 +191,55 @@
                     {% endfor %}
                 </select>
             </div>
+
             <div class="form-group">
                 <label for="provincia">Provincia</label>
                 <select class="form-control" id="provincia" name="provincia" required>
-                    <option value="">Seleccione una provincia</option>
+                    <option value="">Seleccione una provincia...</option>
                     {% for provincia in provincias %}
                     <option value="{{ provincia.id }}">{{ provincia.nombre }}</option>
                     {% endfor %}
                 </select>
             </div>
+
             <div class="form-group">
                 <label for="direccion">Dirección</label>
                 <input type="text" class="form-control" id="direccion" name="direccion" required>
             </div>
+
             <div class="form-group">
                 <label for="fecha_salida">Fecha de Salida</label>
                 <input type="date" class="form-control" id="fecha_salida" name="fecha_salida" required>
             </div>
+
             <div class="form-group">
                 <label for="hora_salida">Hora de Salida</label>
                 <input type="time" class="form-control" id="hora_salida" name="hora_salida" required>
             </div>
+
             <div class="form-group">
                 <label for="fecha_llegada">Fecha de Llegada</label>
-                <input type="date" class="form-control" id="fecha_llegada" name="fecha_llegada" required>
-            </div>
-            <div class="form-group">
-                <label for="hora_llegada">Hora de Llegada</label>
-                <input type="time" class="form-control" id="hora_llegada" name="hora_llegada" required>
+                <input type="date" class="form-control" id="fecha_llegada" name="fecha_llegada">
             </div>
 
+            <div class="form-group">
+                <label for="hora_llegada">Hora de Llegada</label>
+                <input type="time" class="form-control" id="hora_llegada" name="hora_llegada">
+            </div>
+
+            <div class="form-group">
+                <label for="viaticos">Viáticos</label>
+                <select class="form-control" id="viaticos" name="viaticos" required>
+                    <option value="con_viaticos" {% if viaje.viaticos == "con_viaticos" %}selected{% endif %}>Con Viáticos</option>
+                    <option value="sin_viaticos" {% if viaje.viaticos == "sin_viaticos" %}selected{% endif %}>Sin Viáticos</option>
+                </select>
+            </div>                       
+
             <div class="submit-container">
-                <button type="submit" class="btn btn-primary">Registrar Viaje</button>
+                <button type="submit" class="btn btn-custom">Registrar Viaje</button>
             </div>
         </form>
+
 
         <h3>Registro de Viajes</h3>
         <table class="table table-striped">
@@ -231,6 +248,7 @@
                     <th>Chofer</th>
                     <th>Vehículo</th>
                     <th>Provincia</th>
+                    <th>Viáticos</th> <!-- Nueva columna -->
                     <th>Fecha de Salida</th>
                     <th>Hora de Salida</th>
                     <th>Fecha de Llegada</th>
@@ -245,6 +263,13 @@
                     <td>{{ viaje.chofer.nombre }}</td>
                     <td>{{ viaje.vehiculo.placa }}</td>
                     <td>{{ viaje.provincia.nombre }}</td>
+                    <td>
+                        {% if viaje.viaticos == "con_viaticos" %}
+                            Con Viáticos
+                        {% else %}
+                            Sin Viáticos
+                        {% endif %}
+                    </td>                                                         
                     <td>{{ viaje.fecha_salida }}</td>
                     <td>{{ viaje.hora_salida }}</td>
                     <td>{{ viaje.fecha_llegada }}</td>
@@ -259,6 +284,7 @@
                 </tr>
                 {% endfor %}
             </tbody>
+
         </table>
 
     </div>
