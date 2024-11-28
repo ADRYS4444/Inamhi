@@ -717,15 +717,61 @@ def enviar_formulario(request):
         sala = request.POST.get('sala')  
 
         asunto = f'Nuevo mensaje de {nombre} - Reserva de Sala'
-        cuerpo = f'Nombre: {nombre}\nCorreo: {correo}\nMensaje: {mensaje}\nFecha de Reserva: {fecha_reserva}\nHora de Inicio: {hora_inicio}\nHora de Fin: {hora_fin}\nSala Seleccionada: {sala}'
+
+        cuerpo_html = f"""
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f4;
+                    color: #333;
+                }}
+                h2 {{
+                    color: #008080;
+                    font-size: 24px;
+                }}
+                p {{
+                    font-size: 16px;
+                    line-height: 1.5;
+                }}
+                .details {{
+                    background-color: #e7f7e7;
+                    padding: 15px;
+                    border-radius: 8px;
+                }}
+                .details p {{
+                    margin: 5px 0;
+                }}
+                .highlight {{
+                    color: #d9534f;
+                    font-weight: bold;
+                }}
+            </style>
+        </head>
+        <body>
+            <h2>Reserva de Sala:</h2>
+            <p><strong>Nombre:</strong> {nombre}</p>
+            <p><strong>Correo:</strong> {correo}</p>
+            <p><strong>Mensaje:</strong> {mensaje}</p>
+            <div class="details">
+                <p><strong>Fecha de Reserva:</strong> {fecha_reserva}</p>
+                <p><strong>Hora de Inicio:</strong> {hora_inicio}</p>
+                <p><strong>Hora de Fin:</strong> {hora_fin}</p>
+                <p><strong>Sala Seleccionada:</strong> <span class="highlight">{sala}</span></p>
+            </div>
+        </body>
+        </html>
+        """
 
         try:
             send_mail(
                 asunto,
-                cuerpo,
+                '',  
                 settings.DEFAULT_FROM_EMAIL,
-                ['aybanez2003@gmail.com'],  
+                ['aybanez2003@gmail.com'],
                 fail_silently=False,
+                html_message=cuerpo_html  
             )
             messages.success(request, 'El formulario se envió correctamente.')
         except Exception as e:
@@ -734,6 +780,5 @@ def enviar_formulario(request):
         return redirect('vista_reservas')
 
     return render(request, 'vista_reservas.html')
-
 
 
