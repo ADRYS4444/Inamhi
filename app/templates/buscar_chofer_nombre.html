@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -65,12 +66,12 @@
             margin-top: 20px;
             width: 100%;
             border-collapse: collapse;
-            background-color: #343a40; 
+            background-color: #343a40;
         }
 
         table th {
-            background-color: #008080; 
-            color: white; 
+            background-color: #008080;
+            color: white;
             padding: 12px;
             text-align: center;
             border: 1px solid #ddd;
@@ -80,22 +81,58 @@
             padding: 12px;
             text-align: center;
             border: 1px solid #ddd;
-            color: #ffffff; 
+            color: #ffffff;
         }
 
         table tr:nth-child(even) {
-            background-color: #495057; 
+            background-color: #495057;
         }
 
         .no-results {
             color: #ff0000;
             margin-top: 20px;
         }
+
+        .alert-container {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            color: #fff;
+        }
+
+        .alert-success {
+            background-color: #28a745;
+        }
+
+        .alert-error {
+            background-color: #dc3545;
+        }
+
+        .alert-info {
+            background-color: #007bff;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h2>Buscar Chofer por Nombre</h2>
+
+        <!-- Contenedor de mensajes -->
+        {% if messages %}
+        <div class="alert-container">
+            {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <form method="POST">
             {% csrf_token %}
             <div class="form-group">
@@ -103,7 +140,7 @@
                 <input type="text" name="nombre" id="nombre" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-success">Buscar</button>
-            <a href="{% url 'registroViajes' %}" class="btn btn-danger">Regresar</a>
+            <a href="{% url 'loginChoferes' %}" class="btn btn-danger">Regresar</a>
         </form>
 
         {% if choferes %}
@@ -148,6 +185,86 @@
         {% else %}
         <p class="no-results">No se encontraron choferes con ese nombre.</p>
         {% endif %}
+
+        <button class="btn btn-success mt-3" data-toggle="modal" data-target="#reservationModal2">Reservar un Viaje</button>
     </div>
+
+    <div class="modal fade" id="reservationModal2" tabindex="-1" role="dialog" aria-labelledby="reservationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reservationModalLabel">Formulario de Reserva</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'enviar_formulario_2' %}">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" id="nombre" name="nombre" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Correo Electrónico:</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fecha_reserva">Fecha de Viaje:</label>
+                            <input type="date" id="fecha_reserva" name="fecha_reserva" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sala">Seleccione la Provincia:</label>
+                            <select id="sala" name="sala" class="form-control" required>
+                                <option value="Azuay">Azuay</option>
+                                <option value="Bolivar">Bolivar</option>
+                                <option value="Cañar">Cañar</option>
+                                <option value="Carchi">Carchi</option>
+                                <option value="Chimborazo">Chimborazo</option>
+                                <option value="Cotopaxi">Cotopaxi</option>
+                                <option value="El Oro">El Oro</option>
+                                <option value="Esmeraldas">Esmeraldas</option>
+                                <option value="Galápagos">Galápagos</option>
+                                <option value="Guayas">Guayas</option>
+                                <option value="Imbabura">Imbabura</option>
+                                <option value="Loja">Loja</option>
+                                <option value="Los Ríos">Los Ríos</option>
+                                <option value="Manabí">Manabí</option>
+                                <option value="Morona Santiago">Morona Santiago</option>
+                                <option value="Napo">Napo</option>
+                                <option value="Orellana">Orellana</option>
+                                <option value="Pastaza">Pastaza</option>
+                                <option value="Pichincha">Pichincha</option>
+                                <option value="Santa Elena">Santa Elena</option>
+                                <option value="Santo Domingo de los Tsáchilas">Santo Domingo de los Tsáchilas</option>
+                                <option value="Sucumbíos">Sucumbíos</option>
+                                <option value="Tungurahua">Tungurahua</option>
+                                <option value="Zamora Chinchipe">Zamora Chinchipe</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mensaje">Mensaje:</label>
+                            <textarea id="mensaje" name="mensaje" class="form-control" required></textarea>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Enviar Reserva</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>

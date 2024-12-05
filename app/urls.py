@@ -36,4 +36,5 @@ urlpatterns = [
     path('loginSalas/', views.loginSalas_view, name='loginSalas'),
     path('vista-reservas/', views.vista_reservas_view, name='vista_reservas'),
     path('enviar-formulario/', views.enviar_formulario, name='enviar_formulario'),
+    path('enviar-formulario-2/', views.enviar_formulario_2, name='enviar_formulario_2'),
 ]

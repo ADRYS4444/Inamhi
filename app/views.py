@@ -470,7 +470,7 @@ def buscar_chofer_view(request):
                     'hora_salida': viaje.hora_salida,
                     'fecha_llegada': viaje.fecha_llegada,
                     'hora_llegada': viaje.hora_llegada,
-                    'viaticos': viaje.viaticos,  # Agregamos los viáticos aquí
+                    'viaticos': viaje.viaticos, # Agregamos los viáticos aquí
                 })
 
             choferes_data.append({
@@ -502,7 +502,7 @@ def buscar_chofer_nombre_view(request):
                     'hora_salida': viaje.hora_salida,
                     'fecha_llegada': viaje.fecha_llegada,
                     'hora_llegada': viaje.hora_llegada,
-                    'viaticos': viaje.viaticos,  # Agregamos los viáticos aquí
+                    'viaticos': viaje.viaticos,  
                 })
 
             choferes_data.append({
@@ -543,6 +543,72 @@ def eliminar_vehiculo(request, vehiculo_id):
     vehiculo.delete()
     return redirect('agregar_vehiculo') 
 
+
+def enviar_formulario_2(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        email = request.POST.get('email')
+        fecha_reserva = request.POST.get('fecha_reserva')
+        sala = request.POST.get('sala')
+        mensaje = request.POST.get('mensaje')
+
+        asunto = f'Reserva de Viaje por {nombre}'
+
+        cuerpo_html = f"""
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif; 
+                    color: #333; 
+                }}
+                .header {{ 
+                    color: #008080; 
+                    font-size: 20px; 
+                    margin-bottom: 10px; 
+                }}
+                .content {{ 
+                    background-color: #f9f9f9; 
+                    padding: 10px; 
+                    border-radius: 5px; 
+                }}
+                .content p {{ 
+                    margin: 5px 0; 
+                }}
+                .highlight {{ 
+                    color: black; 
+                    font-weight: bold; 
+                }}
+            </style>
+        </head>
+        <body>
+            <h2 class="header">Reserva de Viaje</h2>
+            <div class="content">
+                <p><strong>Nombre:</strong> {nombre}</p>
+                <p><strong>Correo Electrónico:</strong> {email}</p>
+                <p><strong>Fecha de Reserva:</strong> {fecha_reserva}</p>
+                <p><strong>Provincia Seleccionada:</strong> <span class="highlight">{sala}</span></p>
+                <p><strong>Mensaje:</strong> {mensaje}</p>
+            </div>
+        </body>
+        </html>
+        """
+
+        try:
+            send_mail(
+                asunto,  
+                '',  
+                settings.DEFAULT_FROM_EMAIL,  
+                ['aybanez2003@gmail.com'],  
+                fail_silently=False,  
+                html_message=cuerpo_html  
+            )
+
+            messages.success(request, 'La reserva se envió correctamente.')
+        except Exception as e:
+            messages.error(request, f'Ocurrió un error al enviar la reserva: {e}')
+
+    return render(request, 'buscar_chofer_nombre.html')
 
 
 #RESERVAS
