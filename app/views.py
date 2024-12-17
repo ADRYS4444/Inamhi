@@ -590,10 +590,20 @@ from django.db.models import Count
 from django.db.models.functions import TruncMonth
 from django.db.models import Q
 
+from babel import Locale
+from babel.dates import format_date
+from datetime import date
+
+locale_babel = Locale('es', 'ES')
+
+formatted_date = format_date(date.today(), locale=locale_babel)
+
+print(formatted_date)
+
 import calendar
 import locale
 
-locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+#locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 def registro_de_choferes(request):
     viajes = Viaje.objects.values('chofer__nombre', 'fecha_salida__month', 'viaticos')
