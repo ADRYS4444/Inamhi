@@ -24,7 +24,6 @@ urlpatterns = [
     path('choferes/', views.lista_choferes_view, name='lista_choferes'),
     path('agregar_chofer/', views.agregar_chofer_view, name='agregar_chofer'),
     path('buscar_chofer/', views.buscar_chofer_view, name='buscar_chofer'),
-    path('buscar_chofer_nombre/', buscar_chofer_nombre_view, name='buscar_chofer_nombre'),
     path('agregar_vehiculo/', views.agregar_vehiculo_view, name='agregar_vehiculo'),
     path('eliminar_chofer/<int:chofer_id>/', eliminar_chofer, name='eliminar_chofer'),  
     path('eliminar_vehiculo/<int:vehiculo_id>/', eliminar_vehiculo, name='eliminar_vehiculo'),
@@ -37,4 +36,7 @@ urlpatterns = [
     path('vista-reservas/', views.vista_reservas_view, name='vista_reservas'),
     path('enviar-formulario/', views.enviar_formulario, name='enviar_formulario'),
     path('enviar-formulario-2/', views.enviar_formulario_2, name='enviar_formulario_2'),
+    path('ver-viajes/', views.ver_viajes, name='seleccion_vista_viajes'),
+    path('vista-viajes/', views.vista_viajes, name='vista_viajes'),
+    path('registro_de_choferes/', views.registro_de_choferes, name='registro_de_choferes'),
 ]

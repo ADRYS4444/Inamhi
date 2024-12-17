@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viajes</title>
+    <style>
+        body {
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #007BFF;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .button {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 180px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: #218838;
+        }
+
+        .button2 {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #5F9EA0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 225px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .button2:hover {
+            background-color: #008B8B;
+        }
+
+        .regresar-btn {
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            width: 180px;
+            transition: background-color 0.3s ease;
+        }
+
+        .regresar-btn:hover {
+            background-color: #c82333;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .modal-header {
+            background-color: #007BFF;
+            color: white;
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .modal-footer {
+            padding: 10px;
+            text-align: right;
+            background-color: #f1f1f1;
+            border-top: 1px solid #ddd;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+
+        .form-group textarea {
+            height: 120px;
+        }
+
+        .modal-dialog {
+            max-width: 600px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        {% if messages %}
+        <div class="alert-container">
+            {% for message in messages %}
+            <div
+                class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="button">
+            <a href="{% url 'vista_viajes' %}" style="color: #fff;">Ver Viajes</a>
+        </div>
+        <!-- Botón para abrir el modal -->
+        <div class="button2" data-toggle="modal" data-target="#reservationModal2">
+            Reservar un Viaje
+        </div>
+
+        <!-- Botón Regresar centrado debajo de los otros -->
+        <a href="{% url 'loginChoferes' %}" class="regresar-btn">Regresar</a>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="reservationModal2" tabindex="-1" role="dialog" aria-labelledby="reservationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reservationModalLabel">Formulario de Reserva</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'enviar_formulario_2' %}">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" id="nombre" name="nombre" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Correo Electrónico:</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fecha_reserva">Fecha de Viaje:</label>
+                            <input type="date" id="fecha_reserva" name="fecha_reserva" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hora_inicio">Hora de Inicio:</label>
+                            <input type="time" id="hora_inicio" name="hora_inicio" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hora_fin">Hora de Fin:</label>
+                            <input type="time" id="hora_fin" name="hora_fin" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sala">Seleccione la Provincia:</label>
+                            <select id="sala" name="sala" class="form-control" required style="width: 100%; font-size: 16px; padding: 10px;">
+                                <option value="Azuay">Azuay</option>
+                                <option value="Bolivar">Bolivar</option>
+                                <option value="Cañar">Cañar</option>
+                                <option value="Carchi">Carchi</option>
+                                <option value="Chimborazo">Chimborazo</option>
+                                <option value="Cotopaxi">Cotopaxi</option>
+                                <option value="El Oro">El Oro</option>
+                                <option value="Esmeraldas">Esmeraldas</option>
+                                <option value="Galápagos">Galápagos</option>
+                                <option value="Guayas">Guayas</option>
+                                <option value="Imbabura">Imbabura</option>
+                                <option value="Loja">Loja</option>
+                                <option value="Los Ríos">Los Ríos</option>
+                                <option value="Manabí">Manabí</option>
+                                <option value="Morona Santiago">Morona Santiago</option>
+                                <option value="Napo">Napo</option>
+                                <option value="Orellana">Orellana</option>
+                                <option value="Pastaza">Pastaza</option>
+                                <option value="Pichincha">Pichincha</option>
+                                <option value="Santa Elena">Santa Elena</option>
+                                <option value="Santo Domingo de los Tsáchilas">Santo Domingo de los Tsáchilas</option>
+                                <option value="Sucumbíos">Sucumbíos</option>
+                                <option value="Tungurahua">Tungurahua</option>
+                                <option value="Zamora Chinchipe">Zamora Chinchipe</option>
+                            </select>
+                        </div>
+                        
+
+                        <div class="form-group">
+                            <label for="mensaje">Mensaje:</label>
+                            <textarea id="mensaje" name="mensaje" class="form-control" required></textarea>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Enviar Reserva</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

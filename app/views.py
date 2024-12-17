@@ -179,7 +179,7 @@ def loginChoferes_view(request):
             if user.is_superuser:
                 return redirect('registroViajes')  
             else:
-                return redirect('buscar_chofer_nombre')  
+                return redirect('seleccion_vista_viajes')  
         else:
             return render(request, 'loginChoferes.html', {'error': 'Credenciales inválidas'})
 
@@ -470,7 +470,7 @@ def buscar_chofer_view(request):
                     'hora_salida': viaje.hora_salida,
                     'fecha_llegada': viaje.fecha_llegada,
                     'hora_llegada': viaje.hora_llegada,
-                    'viaticos': viaje.viaticos, # Agregamos los viáticos aquí
+                    'viaticos': viaje.viaticos,  # Agregamos los viáticos aquí
                 })
 
             choferes_data.append({
@@ -502,7 +502,7 @@ def buscar_chofer_nombre_view(request):
                     'hora_salida': viaje.hora_salida,
                     'fecha_llegada': viaje.fecha_llegada,
                     'hora_llegada': viaje.hora_llegada,
-                    'viaticos': viaje.viaticos,  
+                    'viaticos': viaje.viaticos,  # Agregamos los viáticos aquí
                 })
 
             choferes_data.append({
@@ -514,6 +514,49 @@ def buscar_chofer_nombre_view(request):
     return render(request, 'buscar_chofer_nombre.html', {
         'choferes': choferes_data
     })
+
+from django.db.models.functions import ExtractMonth, ExtractYear
+import json
+from django.http import JsonResponse # Asegúrate de importar tu modelo Viaje
+
+from datetime import datetime
+import pytz
+import json
+from django.shortcuts import render
+from .models import Viaje  # Asegúrate de que este sea el modelo correcto
+
+def vista_viajes(request):
+    # Obtén todos los viajes registrados
+    viajes = Viaje.objects.all()
+
+    # Crear una lista de eventos para el calendario
+    eventos = []
+
+    # Zona horaria local
+    local_tz = pytz.timezone('America/Guayaquil')  # Ajusta según tu zona horaria local
+    utc_tz = pytz.utc
+
+    for viaje in viajes:
+        # Convertir hora de salida a UTC
+        hora_salida_local = local_tz.localize(datetime.combine(viaje.fecha_salida, viaje.hora_salida))
+        hora_salida_utc = hora_salida_local.astimezone(utc_tz)
+
+        # Convertir hora de llegada a UTC
+        hora_llegada_local = local_tz.localize(datetime.combine(viaje.fecha_llegada, viaje.hora_llegada))
+        hora_llegada_utc = hora_llegada_local.astimezone(utc_tz)
+
+        # Crear evento con las horas convertidas a UTC
+        evento = {
+            'title': f"{viaje.chofer.nombre} - {viaje.vehiculo.placa}",
+            'start': hora_salida_utc.isoformat(),
+            'end': hora_llegada_utc.isoformat(),
+            'description': f"Provincia: {viaje.provincia.nombre}\nViáticos: {'Con Viáticos' if viaje.viaticos == 'con_viaticos' else 'Sin Viáticos'}",
+            'color': '#008080'  # Puedes cambiar el color según tu preferencia
+        }
+        eventos.append(evento)
+
+    # Pasar los eventos a la plantilla como JSON
+    return render(request, 'vista_viajes.html', {'evento_json': json.dumps(eventos)})
 
 
 
@@ -543,12 +586,95 @@ def eliminar_vehiculo(request, vehiculo_id):
     vehiculo.delete()
     return redirect('agregar_vehiculo') 
 
+from django.db.models import Count
+from django.db.models.functions import TruncMonth
+from django.db.models import Q
+
+import calendar
+import locale
+
+locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+
+def registro_de_choferes(request):
+    viajes = Viaje.objects.values('chofer__nombre', 'fecha_salida__month', 'viaticos')
+    datos_por_mes = []
+    datos_por_trimestre = []
+
+    trimestre_map = {
+        1: "1er Trimestre", 2: "1er Trimestre", 3: "1er Trimestre",
+        4: "2do Trimestre", 5: "2do Trimestre", 6: "2do Trimestre",
+        7: "3er Trimestre", 8: "3er Trimestre", 9: "3er Trimestre",
+        10: "4to Trimestre", 11: "4to Trimestre", 12: "4to Trimestre",
+    }
+
+    choferes_mes = {}
+    choferes_trimestre = {}
+
+    for viaje in viajes:
+        chofer = viaje['chofer__nombre']
+        mes_numero = viaje['fecha_salida__month']
+        mes_nombre = calendar.month_name[mes_numero]
+        trimestre_nombre = trimestre_map[mes_numero]
+        viaticos = viaje['viaticos']
+
+        if chofer not in choferes_mes:
+            choferes_mes[chofer] = {}
+
+        if mes_nombre not in choferes_mes[chofer]:
+            choferes_mes[chofer][mes_nombre] = {'con_viaticos': 0, 'sin_viaticos': 0}
+
+        if viaticos == 'con_viaticos':
+            choferes_mes[chofer][mes_nombre]['con_viaticos'] += 1
+        else:
+            choferes_mes[chofer][mes_nombre]['sin_viaticos'] += 1
+
+        if chofer not in choferes_trimestre:
+            choferes_trimestre[chofer] = {}
+
+        if trimestre_nombre not in choferes_trimestre[chofer]:
+            choferes_trimestre[chofer][trimestre_nombre] = {'con_viaticos': 0, 'sin_viaticos': 0}
+
+        if viaticos == 'con_viaticos':
+            choferes_trimestre[chofer][trimestre_nombre]['con_viaticos'] += 1
+        else:
+            choferes_trimestre[chofer][trimestre_nombre]['sin_viaticos'] += 1
+
+    for chofer, meses in choferes_mes.items():
+        for mes, conteo in meses.items():
+            datos_por_mes.append({
+                'chofer': chofer,
+                'mes': mes,
+                'con_viaticos': conteo['con_viaticos'],
+                'sin_viaticos': conteo['sin_viaticos']
+            })
+
+    for chofer, trimestres in choferes_trimestre.items():
+        for trimestre, conteo in trimestres.items():
+            datos_por_trimestre.append({
+                'chofer': chofer,
+                'trimestre': trimestre,
+                'con_viaticos': conteo['con_viaticos'],
+                'sin_viaticos': conteo['sin_viaticos']
+            })
+
+    return render(request, 'registro_de_choferes.html', {
+        'datos_por_mes': datos_por_mes,
+        'datos_por_trimestre': datos_por_trimestre,
+    })
+
+
+
+
+from django.core.mail import send_mail
+from django.conf import settings
 
 def enviar_formulario_2(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         email = request.POST.get('email')
         fecha_reserva = request.POST.get('fecha_reserva')
+        hora_inicio = request.POST.get('hora_inicio')
+        hora_fin = request.POST.get('hora_fin')
         sala = request.POST.get('sala')
         mensaje = request.POST.get('mensaje')
 
@@ -587,6 +713,8 @@ def enviar_formulario_2(request):
                 <p><strong>Nombre:</strong> {nombre}</p>
                 <p><strong>Correo Electrónico:</strong> {email}</p>
                 <p><strong>Fecha de Reserva:</strong> {fecha_reserva}</p>
+                <p><strong>Hora de Inicio:</strong> {hora_inicio}</p>
+                <p><strong>Hora de Fin:</strong> {hora_fin}</p>
                 <p><strong>Provincia Seleccionada:</strong> <span class="highlight">{sala}</span></p>
                 <p><strong>Mensaje:</strong> {mensaje}</p>
             </div>
@@ -608,8 +736,10 @@ def enviar_formulario_2(request):
         except Exception as e:
             messages.error(request, f'Ocurrió un error al enviar la reserva: {e}')
 
-    return render(request, 'buscar_chofer_nombre.html')
+    return render(request, 'seleccion_vista_viajes.html')
 
+def ver_viajes(request):
+    return render(request, 'seleccion_vista_viajes.html')
 
 #RESERVAS
 from django.db import IntegrityError
